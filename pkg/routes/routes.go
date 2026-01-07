@@ -19,9 +19,10 @@ func Routes() *gin.Engine{
 		MaxAge:        3600,
 	}))
 
-
 	r:=router.Group("/api/v1")
 	{
+		r.Use(mw.AuthMiddleware())
+		r.Use(mw.RateLimiterMiddleware())
 		r.GET("/healthcheck",cont.Healthcheck())
 		r.GET("/ping",cont.Ping())
 	}
