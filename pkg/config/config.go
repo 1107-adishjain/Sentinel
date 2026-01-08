@@ -10,6 +10,8 @@ import (
 
 type Config struct{
 	PORT string 
+	RedisAddr string
+	RedisPassword string
 }
 
 func LookupEnv(key, defaultValue string) string {
@@ -27,6 +29,8 @@ func LoadConfig() (*Config, error) {
 	}
 	return &Config{
 		PORT: LookupEnv("PORT", "8000"),
+		RedisAddr:LookupEnv("REDIS_ADDR", "localhost:6379"),
+		RedisPassword: LookupEnv("REDIS_PASSWORD", ""),
 	}, nil
 }
 

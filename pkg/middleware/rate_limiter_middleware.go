@@ -2,9 +2,11 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"github.com/1107-adishjain/sentinel/pkg/ratelimiter"
 )
 
-func RateLimiterMiddleware() gin.HandlerFunc {
+func RateLimiterMiddleware(limiter ratelimiter.Limiter) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		userID, exists := c.Get(ContextUserIDKey)
@@ -15,11 +17,11 @@ func RateLimiterMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// userID is now available for rate limiting logic
-		_ = userID // placeholder, to be used next
-
-		// Rate limiting logic will go here (Redis later)
-
+		allowed,err:= limiter.Allow(userID.(string))
+		if err != nil || !allowed {
+			c.AbortWithStatus(http.StatusTooManyRequests)
+			return
+		}
 		c.Next()
 	}
 }

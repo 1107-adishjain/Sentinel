@@ -1,13 +1,14 @@
 package routes
 
 import (
+	"github.com/1107-adishjain/sentinel/app"
 	cont "github.com/1107-adishjain/sentinel/pkg/controllers"
-	"github.com/gin-gonic/gin"
 	mw "github.com/1107-adishjain/sentinel/pkg/middleware"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
-func Routes() *gin.Engine{
+func Routes(app *app.Application) *gin.Engine{
 	router:= gin.Default()
 
 	router.Use(mw.SecurityHeaders())
@@ -22,7 +23,7 @@ func Routes() *gin.Engine{
 	r:=router.Group("/api/v1")
 	{
 		r.Use(mw.AuthMiddleware())
-		r.Use(mw.RateLimiterMiddleware())
+		r.Use(mw.RateLimiterMiddleware(app.Ratelimiter))
 		r.GET("/healthcheck",cont.Healthcheck())
 		r.GET("/ping",cont.Ping())
 	}
