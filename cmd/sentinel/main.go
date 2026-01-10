@@ -21,11 +21,15 @@ func main() {
 	cfg, err := cg.LoadConfig()
 	if err != nil {
 		log.Fatalf("Error loading Config variables: %v", err)
+	}else{
+		log.Println("Config variables loaded successfully")
 	}
 
 	redisClient := redis.Connect(cfg)
 	if redisClient == nil {
 		log.Fatalf("Failed to connect to Redis. Exiting application.")
+	}else{
+		log.Println("Connected to Redis successfully")
 	}
 
 	limiter := ratelimiter.NewRedisLimiter(redisClient)
@@ -35,6 +39,7 @@ func main() {
 		Ratelimiter: limiter,
 		Config:      cfg,
 	}
+
 	srv := &http.Server{
 		Addr:         ":" + cfg.PORT,
 		Handler:      routes.Routes(app),

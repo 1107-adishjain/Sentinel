@@ -18,7 +18,7 @@ type RedisLimiter struct {
 }
 
 // NewRedisLimiter constructs a Redis-backed rate limiter.
-// All configuration lives here, not in middleware.
+// All configuration details lives here, not in middleware.
 func NewRedisLimiter(client *redis.Client) *RedisLimiter {
 	return &RedisLimiter{
 		client:     client,
@@ -34,6 +34,7 @@ func NewRedisLimiter(client *redis.Client) *RedisLimiter {
 func (r *RedisLimiter) Allow(key string) (bool, error) {
 	now := time.Now().Unix()
 
+	// lua returns 1 if allowed, 0 if not
 	res, err := r.script.Run(
 		r.ctx,
 		r.client,
@@ -48,5 +49,6 @@ func (r *RedisLimiter) Allow(key string) (bool, error) {
 		return false, err
 	}
 
+	// 1 means allowed request 
 	return res == 1, nil
 }

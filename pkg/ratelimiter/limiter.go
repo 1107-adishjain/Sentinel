@@ -1,7 +1,6 @@
 package ratelimiter
 
-// Limiter defines the contract for any rate limiting backend.
-// Middleware does not care how limits are enforced.
+// This interface can be now used to define different rate limiter implementations that is any struct or any type can implement this method.  the way they want to implement rate limiting
 type Limiter interface {
 	// Allow returns whether the request identified by key is allowed.
 	Allow(key string) (bool, error)
