@@ -11,6 +11,8 @@ import (
 
 	"github.com/1107-adishjain/sentinel/app"
 	cg "github.com/1107-adishjain/sentinel/pkg/config"
+	"github.com/1107-adishjain/sentinel/pkg/database"
+	"github.com/1107-adishjain/sentinel/pkg/models"
 	"github.com/1107-adishjain/sentinel/pkg/ratelimiter"
 	"github.com/1107-adishjain/sentinel/pkg/redis"
 	"github.com/1107-adishjain/sentinel/pkg/routes"
@@ -32,12 +34,27 @@ func main() {
 		log.Println("Connected to Redis successfully")
 	}
 
+	db, err:= database.ConnectDB(cfg)
+	if err!=nil{
+		log.Fatalf("Error connecting to database:%v",err)
+	}else{
+		log.Println("Connected to Database successfully	")
+	}
+	
+	err = models.MigrateRateLimitEvent(db)
+	if err != nil {
+		log.Fatalf("Error migrating database: %v", err)
+	}else{
+		log.Println("Database migration completed successfully")
+	}
+
 	limiter := ratelimiter.NewRedisLimiter(redisClient)
 
 	app := &app.Application{
 		RedisClient: redisClient,
 		Ratelimiter: limiter,
 		Config:      cfg,
+		DB: db,
 	}
 
 	srv := &http.Server{
