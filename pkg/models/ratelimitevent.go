@@ -19,3 +19,4 @@ type RateLimitEvent struct {
 func MigrateRateLimitEvent(db *gorm.DB) error {
 	return db.AutoMigrate(&RateLimitEvent{})
 }
+
