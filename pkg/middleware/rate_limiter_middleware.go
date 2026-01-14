@@ -1,27 +1,41 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/1107-adishjain/sentinel/pkg/logger"
+	"github.com/1107-adishjain/sentinel/pkg/models"
 	"github.com/1107-adishjain/sentinel/pkg/ratelimiter"
+	"github.com/gin-gonic/gin"
 )
 
-func RateLimiterMiddleware(limiter ratelimiter.Limiter) gin.HandlerFunc {
+func RateLimiterMiddleware(limiter ratelimiter.Limiter, log *logger.RateLimitLogger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		userID, exists := c.Get(ContextUserIDKey)
 		if !exists {
-			c.AbortWithStatusJSON(401, gin.H{
-				"error": "Unauthorized",
-			})
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
-		allowed,err:= limiter.Allow(userID.(string))
+		allowed, err := limiter.Allow(userID.(string))
 		if err != nil || !allowed {
+
+			// Build log event (cheap, in-memory only)
+			event := models.RateLimitEvent{
+				UserID:   userID.(string),
+				Endpoint: c.FullPath(),
+				Method:   c.Request.Method,
+				IP:       c.ClientIP(),
+				Reason:   "rate_limit_exceeded",
+			}
+
+			// Non-blocking log signal
+			log.Log(event)
+
 			c.AbortWithStatus(http.StatusTooManyRequests)
 			return
 		}
+
 		c.Next()
 	}
 }

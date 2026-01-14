@@ -16,6 +16,7 @@ import (
 	"github.com/1107-adishjain/sentinel/pkg/ratelimiter"
 	"github.com/1107-adishjain/sentinel/pkg/redis"
 	"github.com/1107-adishjain/sentinel/pkg/routes"
+	"github.com/1107-adishjain/sentinel/pkg/logger"
 )
 
 func main() {
@@ -48,13 +49,21 @@ func main() {
 		log.Println("Database migration completed successfully")
 	}
 
+
 	limiter := ratelimiter.NewRedisLimiter(redisClient)
+
+	ratelimitLogger:= logger.NewRateLimitLogger(10000) 
+	// here you passed the event channel to the worker now both the worker and the logger are pointer to the same channel
+	worker:= logger.NewWorker(db,ratelimitLogger.Events())
+	ctx, worker_cancel := context.WithCancel(context.Background())
+	worker.Start(ctx)
 
 	app := &app.Application{
 		RedisClient: redisClient,
 		Ratelimiter: limiter,
 		Config:      cfg,
 		DB: db,
+		Logger: ratelimitLogger,
 	}
 
 	srv := &http.Server{
@@ -75,6 +84,8 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 		Shutdown <- srv.Shutdown(ctx)
+		ratelimitLogger.Close() // close the logger channel
+		worker_cancel()                // stop the worker
 	}()
 
 	log.Printf("Starting the server on port %s", cfg.PORT)

@@ -23,7 +23,7 @@ func Routes(app *app.Application) *gin.Engine{
 	r:=router.Group("/api/v1")
 	{
 		r.Use(mw.AuthMiddleware())
-		r.Use(mw.RateLimiterMiddleware(app.Ratelimiter))
+		r.Use(mw.RateLimiterMiddleware(app.Ratelimiter,app.Logger))
 		r.GET("/healthcheck",cont.Healthcheck())
 		r.GET("/ping",cont.Ping())
 	}
