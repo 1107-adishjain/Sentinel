@@ -4,8 +4,7 @@ import (
 	"github.com/1107-adishjain/sentinel/pkg/models"
 )
 
-// RateLimitLogger is responsible ONLY for accepting log events
-// and pushing them to a buffered channel.
+// RateLimitLogger is responsible ONLY for accepting log events and pushing them to a buffered channel.
 type RateLimitLogger struct {
 	events chan models.RateLimitEvent
 }
@@ -22,8 +21,7 @@ func (l *RateLimitLogger) Events() <-chan models.RateLimitEvent {
 	return l.events
 }
 
-// Log pushes an event into the channel WITHOUT blocking.
-// If buffer is full, event is dropped (by design).
+// Log pushes an event into the channel WITHOUT blocking.If buffer is full, event is dropped (by design).
 func (l *RateLimitLogger) Log(event models.RateLimitEvent) {
 	select {
 	case l.events <- event: //pushes event to channel and proceed.
