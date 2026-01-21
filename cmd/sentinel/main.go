@@ -48,6 +48,12 @@ func main() {
 	}else{
 		log.Println("Database migration completed successfully")
 	}
+	err = models.MigrateUser(db)
+	if err != nil {
+		log.Fatalf("Error migrating database: %v", err)
+	}else{
+		log.Println("Database migration completed successfully")
+	}
 
 
 	limiter := ratelimiter.NewRedisLimiter(redisClient)
