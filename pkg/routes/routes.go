@@ -22,8 +22,8 @@ func Routes(app *app.Application) *gin.Engine{
 
 	r:=router.Group("/api/v1")
 	{
-		r.POST("/signup",cont.Signup())
-		r.POST("/login",cont.Login())
+		r.POST("/signup",cont.Signup(app.DB))
+		r.POST("/login",cont.Login(app.DB))
 		r.Use(mw.AuthMiddleware())
 		r.Use(mw.RateLimiterMiddleware(app.Ratelimiter,app.Logger))
 		r.GET("/healthcheck",cont.Healthcheck())
