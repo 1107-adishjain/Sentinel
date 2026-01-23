@@ -3,7 +3,7 @@ package ratelimiter
 import (
 	"context"
 	"time"
-
+	"github.com/1107-adishjain/sentinel/pkg/metrics"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -46,6 +46,7 @@ func (r *RedisLimiter) Allow(key string) (bool, error) {
 	).Int()
 
 	if err != nil {
+		metrics.RedisErrors.Inc()
 		return false, err
 	}
 

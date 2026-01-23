@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/1107-adishjain/sentinel/pkg/logger"
+	"github.com/1107-adishjain/sentinel/pkg/metrics"
 	"github.com/1107-adishjain/sentinel/pkg/models"
 	"github.com/1107-adishjain/sentinel/pkg/ratelimiter"
 	"github.com/gin-gonic/gin"
@@ -16,11 +17,11 @@ func RateLimiterMiddleware(limiter ratelimiter.Limiter, log *logger.RateLimitLog
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-
+		metrics.TotalRequests.Inc()
 		allowed, err := limiter.Allow(userID.(string))
 		if err != nil || !allowed {
 
-			// Build log event (cheap, in-memory only)
+			metrics.BlockedRequests.Inc()
 			event := models.RateLimitEvent{
 				UserID:   userID.(string),
 				Endpoint: c.FullPath(),
@@ -35,6 +36,7 @@ func RateLimiterMiddleware(limiter ratelimiter.Limiter, log *logger.RateLimitLog
 			c.AbortWithStatus(http.StatusTooManyRequests)
 			return
 		}
+		metrics.AllowedRequests.Inc()
 
 		c.Next()
 	}

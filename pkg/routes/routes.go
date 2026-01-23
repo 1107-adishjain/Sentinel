@@ -6,6 +6,9 @@ import (
 	mw "github.com/1107-adishjain/sentinel/pkg/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/1107-adishjain/sentinel/pkg/metrics"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 )
 
 func Routes(app *app.Application) *gin.Engine{
@@ -19,7 +22,7 @@ func Routes(app *app.Application) *gin.Engine{
 		ExposeHeaders: []string{"Content-Length"},
 		MaxAge:        3600,
 	}))
-
+	metrics.Register()
 	r:=router.Group("/api/v1")
 	{
 		r.POST("/signup",cont.Signup(app.DB))
@@ -29,6 +32,6 @@ func Routes(app *app.Application) *gin.Engine{
 		r.GET("/healthcheck",cont.Healthcheck())
 		r.GET("/ping",cont.Ping())
 	}
-
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	return router
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/1107-adishjain/sentinel/pkg/metrics"
 	"github.com/1107-adishjain/sentinel/pkg/models"
 	"gorm.io/gorm"
 )
@@ -28,6 +29,7 @@ func (w *Worker) Start(ctx context.Context) {
 	go func() {
 		for event := range w.events {
 			if err := w.db.Create(&event).Error; err != nil {
+				metrics.DBFailures.Inc()
 				log.Printf("Failed to store rate limit event: %v", err)
 			}
 		}
