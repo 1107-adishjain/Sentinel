@@ -29,3 +29,10 @@ func Connect(cfg *config.Config) *redis.Client{
 	}
 	return client
 }
+
+
+func Close(client *redis.Client){
+	if err := client.Close(); err != nil {
+		log.Printf("Error closing Redis client: %v", err)
+	}
+}

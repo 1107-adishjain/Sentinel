@@ -92,6 +92,8 @@ func main() {
 		Shutdown <- srv.Shutdown(ctx)
 		ratelimitLogger.Close() // close the logger channel
 		worker_cancel()                // stop the worker
+		redis.Close(redisClient) // close the redis connection!!
+		database.CloseDB(db) //close the Db connection!!
 	}()
 
 	log.Printf("Starting the server on port %s", cfg.PORT)
