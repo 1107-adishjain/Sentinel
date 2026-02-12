@@ -23,7 +23,7 @@ FROM gcr.io/distroless/base-debian12:nonroot
 WORKDIR /app
 
 # Copy binary from builder
-COPY --from=builder /app/sentinel .
+COPY --from=builder /app/sentinel ./cmd/sentinel/main.go
 
 # Expose port (if needed)
 EXPOSE 8080
