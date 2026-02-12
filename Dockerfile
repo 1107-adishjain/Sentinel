@@ -15,7 +15,7 @@ COPY . .
 
 # Build static binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -o rsentinel .
+    go build -o sentinel .
 
 
 # ---------- Runtime Stage ----------
@@ -25,7 +25,7 @@ FROM docker.io/dhi/distroless/base:nonroot
 WORKDIR /app
 
 # Copy binary from builder
-COPY --from=builder /app/rsentinel .
+COPY --from=builder /app/sentinel .
 
 # Expose port (if needed)
 EXPOSE 8080
@@ -34,4 +34,4 @@ EXPOSE 8080
 USER nonroot
 
 # Start application
-CMD ["./rsentinel"]
+CMD ["./sentinel"]
