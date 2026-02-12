@@ -1,16 +1,16 @@
 package helper
 
-import(
+import (
+	"github.com/golang-jwt/jwt/v4"
 	"os"
 	"time"
-	"github.com/golang-jwt/jwt/v4"
 )
 
 var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
 type Claims struct {
-	UserID    string `json:"user_id"`
-	Email     string `json:"email"`
+	UserID string `json:"user_id"`
+	Email  string `json:"email"`
 	jwt.RegisteredClaims
 }
 
@@ -19,8 +19,8 @@ func GenerateJWT(userid, email string) (access_token, refresh_token string, err 
 	refreshExp := time.Now().Add(7 * 24 * time.Hour)
 
 	accessClaims := Claims{
-		UserID:    userid,
-		Email: email,
+		UserID: userid,
+		Email:  email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(accessExp),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

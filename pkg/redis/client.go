@@ -2,15 +2,13 @@ package redis
 
 import (
 	"context"
-	"log"
-	"time"
 	"github.com/1107-adishjain/sentinel/pkg/config"
 	"github.com/redis/go-redis/v9"
+	"log"
+	"time"
 )
 
-
-
-func Connect(cfg *config.Config) *redis.Client{
+func Connect(cfg *config.Config) *redis.Client {
 	client := redis.NewClient(&redis.Options{
 		Addr:         cfg.RedisAddr,
 		Password:     cfg.RedisPassword,
@@ -30,8 +28,7 @@ func Connect(cfg *config.Config) *redis.Client{
 	return client
 }
 
-
-func Close(client *redis.Client){
+func Close(client *redis.Client) {
 	if err := client.Close(); err != nil {
 		log.Printf("Error closing Redis client: %v", err)
 	}

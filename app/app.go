@@ -9,9 +9,9 @@ import (
 )
 
 type Application struct {
-	Config *config.Config
+	Config      *config.Config
 	RedisClient *redis.Client
 	Ratelimiter ratelimiter.Limiter
-	DB *gorm.DB
-	Logger *logger.RateLimitLogger
+	DB          *gorm.DB
+	Logger      *logger.RateLimitLogger
 }

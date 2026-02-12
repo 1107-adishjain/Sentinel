@@ -1,9 +1,7 @@
 package middleware
 
-
-import(
+import (
 	"github.com/gin-gonic/gin"
-
 )
 
 func SecurityHeaders() gin.HandlerFunc {

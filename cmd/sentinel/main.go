@@ -12,11 +12,11 @@ import (
 	"github.com/1107-adishjain/sentinel/app"
 	cg "github.com/1107-adishjain/sentinel/pkg/config"
 	"github.com/1107-adishjain/sentinel/pkg/database"
+	"github.com/1107-adishjain/sentinel/pkg/logger"
 	"github.com/1107-adishjain/sentinel/pkg/models"
 	"github.com/1107-adishjain/sentinel/pkg/ratelimiter"
 	"github.com/1107-adishjain/sentinel/pkg/redis"
 	"github.com/1107-adishjain/sentinel/pkg/routes"
-	"github.com/1107-adishjain/sentinel/pkg/logger"
 )
 
 func main() {
@@ -24,43 +24,42 @@ func main() {
 	cfg, err := cg.LoadConfig()
 	if err != nil {
 		log.Fatalf("Error loading Config variables: %v", err)
-	}else{
+	} else {
 		log.Println("Config variables loaded successfully")
 	}
 
 	redisClient := redis.Connect(cfg)
 	if redisClient == nil {
 		log.Fatalf("Failed to connect to Redis. Exiting application.")
-	}else{
+	} else {
 		log.Println("Connected to Redis successfully")
 	}
 
-	db, err:= database.ConnectDB(cfg)
-	if err!=nil{
-		log.Fatalf("Error connecting to database:%v",err)
-	}else{
+	db, err := database.ConnectDB(cfg)
+	if err != nil {
+		log.Fatalf("Error connecting to database:%v", err)
+	} else {
 		log.Println("Connected to Database successfully	")
 	}
-	
+
 	err = models.MigrateRateLimitEvent(db)
 	if err != nil {
 		log.Fatalf("Error migrating database: %v", err)
-	}else{
+	} else {
 		log.Println("Database migration completed successfully")
 	}
 	err = models.MigrateUser(db)
 	if err != nil {
 		log.Fatalf("Error migrating database: %v", err)
-	}else{
+	} else {
 		log.Println("Database migration completed successfully")
 	}
 
-
 	limiter := ratelimiter.NewRedisLimiter(redisClient)
 
-	ratelimitLogger:= logger.NewRateLimitLogger(10000) 
+	ratelimitLogger := logger.NewRateLimitLogger(10000)
 	// here you passed the event channel to the worker now both the worker and the logger are pointer to the same channel
-	worker:= logger.NewWorker(db,ratelimitLogger.Events())
+	worker := logger.NewWorker(db, ratelimitLogger.Events())
 	ctx, worker_cancel := context.WithCancel(context.Background())
 	worker.Start(ctx)
 
@@ -68,8 +67,8 @@ func main() {
 		RedisClient: redisClient,
 		Ratelimiter: limiter,
 		Config:      cfg,
-		DB: db,
-		Logger: ratelimitLogger,
+		DB:          db,
+		Logger:      ratelimitLogger,
 	}
 
 	srv := &http.Server{
@@ -90,10 +89,10 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 		Shutdown <- srv.Shutdown(ctx)
-		ratelimitLogger.Close() // close the logger channel
-		worker_cancel()                // stop the worker
+		ratelimitLogger.Close()  // close the logger channel
+		worker_cancel()          // stop the worker
 		redis.Close(redisClient) // close the redis connection!!
-		database.CloseDB(db) //close the Db connection!!
+		database.CloseDB(db)     //close the Db connection!!
 	}()
 
 	log.Printf("Starting the server on port %s", cfg.PORT)

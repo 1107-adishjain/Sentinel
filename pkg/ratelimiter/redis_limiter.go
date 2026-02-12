@@ -2,19 +2,19 @@ package ratelimiter
 
 import (
 	"context"
-	"time"
 	"github.com/1107-adishjain/sentinel/pkg/metrics"
 	"github.com/redis/go-redis/v9"
+	"time"
 )
 
 // RedisLimiter implements token bucket rate limiting using Redis + Lua.
 type RedisLimiter struct {
-	client       *redis.Client
-	script       *redis.Script
-	maxTokens    int
-	refillRate   int // tokens per second
-	keyTTL       time.Duration
-	ctx          context.Context
+	client     *redis.Client
+	script     *redis.Script
+	maxTokens  int
+	refillRate int // tokens per second
+	keyTTL     time.Duration
+	ctx        context.Context
 }
 
 // NewRedisLimiter constructs a Redis-backed rate limiter.
@@ -50,6 +50,6 @@ func (r *RedisLimiter) Allow(key string) (bool, error) {
 		return false, err
 	}
 
-	// 1 means allowed request 
+	// 1 means allowed request
 	return res == 1, nil
 }

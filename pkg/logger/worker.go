@@ -36,4 +36,3 @@ func (w *Worker) Start(ctx context.Context) {
 		log.Println("RateLimit logger worker exited cleanly")
 	}()
 }
-

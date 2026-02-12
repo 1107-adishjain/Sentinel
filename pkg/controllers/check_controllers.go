@@ -13,11 +13,10 @@ func Healthcheck() gin.HandlerFunc {
 	}
 }
 
-
-func Ping()  gin.HandlerFunc{
-	return func(c *gin.Context){
+func Ping() gin.HandlerFunc {
+	return func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"message":"pong",
+			"message": "pong",
 		})
 	}
 }
