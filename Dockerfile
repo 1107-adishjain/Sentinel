@@ -18,8 +18,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 
 
 # ---------- Runtime Stage ----------
-FROM dhi.io/distroless/base:nonroot
-
+FROM gcr.io/distroless/base-debian12:nonroot
 # Set working directory
 WORKDIR /app
 
