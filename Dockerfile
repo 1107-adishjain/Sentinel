@@ -1,6 +1,5 @@
 # ---------- Builder Stage ----------
-FROM docker.io/dhi/golang:1.21.6 AS builder
-
+FROM dhi.io/golang:1.26-debian13-sfw-ent-dev as builder
 # Set working directory
 WORKDIR /app
 
@@ -19,7 +18,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 
 
 # ---------- Runtime Stage ----------
-FROM docker.io/dhi/distroless/base:nonroot
+FROM dhi.io/distroless/base:nonroot
 
 # Set working directory
 WORKDIR /app
