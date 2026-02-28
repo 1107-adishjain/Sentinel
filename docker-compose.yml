@@ -29,3 +29,11 @@ services:
       - prometheus
     restart: unless-stopped
 
+  sentinel-backend:
+    image: adishjain1107/sentinel-backend
+    container_name: sentinel-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    restart: unless-stopped
