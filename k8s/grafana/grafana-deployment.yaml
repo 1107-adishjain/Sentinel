@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-deployment
+  namespace: sentinel
+  labels:
+    app: grafana
+    appGroup: sentinel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+      appGroup: sentinel
+  template:
+    metadata:
+      labels:
+        app: grafana
+        appGroup: sentinel
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:10.4.2
+          ports:
+            - containerPort: 3000
