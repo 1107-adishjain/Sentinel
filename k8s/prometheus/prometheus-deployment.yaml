@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+  namespace: sentinel
+  labels:
+    app: prometheus
+    appGroup: sentinel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+      appGroup: sentinel
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        appGroup: sentinel
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.52.0
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: prometheus-config-volume
+              mountPath: /etc/prometheus/
+      volumes:
+        - name: prometheus-config-volume
+          configMap:
+            name: prometheus-config
+            items:
+              - key: prometheus.yml
+                path: prometheus.yml
+
+# ConfigMap holds the config file.
+# Volume/volumeMount puts that config file into the container.
+# Prometheus uses that config file to know what to scrape and how to behave.
