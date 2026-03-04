@@ -35,7 +35,3 @@ spec:
             items:
               - key: prometheus.yml
                 path: prometheus.yml
-
-# ConfigMap holds the config file.
-# Volume/volumeMount puts that config file into the container.
-# Prometheus uses that config file to know what to scrape and how to behave.
