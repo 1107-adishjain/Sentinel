@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  namespace: sentinel
+  labels:
+    app: redis
+    appGroup: sentinel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      appGroup: sentinel
+  template:
+    metadata:
+      labels:
+        app: redis
+        appGroup: sentinel
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.2.4
+          command: ["redis-server", "--appendonly", "yes"]
+          ports:
+            - containerPort: 6379
